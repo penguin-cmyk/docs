@@ -1,6 +1,6 @@
 The execution process begins by compiling the provided code into bytecode. A new `Luau thread` (state) is created and sandboxed to make standard libraries read-only. The thread's identity is set to 8, and its capabilities are assigned to match the specified capabilities.
 
-Next, the `luau::vm_load` function is called to load the bytecode into the new thread. The chunk is given a name (which can be arbitrary), and the environment ID is set to 0, indicating the default global environment. If the loading process fails, the function returns false. Otherwise, the closure is retrieved from the stack, its prototype capabilities are set, and the script's execution is scheduled using task_defer on the thread.
+Next, the `luau::vm_load` function is called to load the bytecode into the new thread. The chunk is given a name (which can be arbitrary), and the environment index is set to 0, indicating the default global environment. If the loading process fails, the function returns false. Otherwise, the closure is retrieved from the stack, its prototype capabilities are set, and the script's execution is scheduled using task_defer on the thread.
 
 --- 
 What do these functions look like?
@@ -47,7 +47,7 @@ bool execution::execute(lua_State* state, const std::string& code) {
         return false;
     }
 
-    const Closure* cl = clvalue(luaA_toobject(L, -1));
+    const Closure* cl = (Closure*)lua_topointer(L, -1);
 
     set_capabilities(cl->l.p, &capabilities);
 
